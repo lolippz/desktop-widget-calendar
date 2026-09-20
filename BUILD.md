@@ -58,7 +58,7 @@ jpackage \
   --input target/jpackage-input \
   --main-jar desktop-calendar-1.0.1-jar-with-dependencies.jar \
   --main-class com.calendar.system.Main \
-  --dest target/dist \
+  --dest target/release \
   --app-version 1.0.1 \
   --vendor lolippz \
   --description "Desktop calendar widget with lunar calendar and stock quotes" \
@@ -69,13 +69,18 @@ jpackage \
 产物结构：
 
 ```
-target/dist/DesktopCalendar/
+target/release/DesktopCalendar/
 ├── DesktopCalendar.exe      启动器（约 440 KB）
 ├── app/                     应用 jar 与配置
 │   ├── desktop-calendar-1.0.1-jar-with-dependencies.jar
 │   └── DesktopCalendar.cfg
 └── runtime/                 精简后的 Java 运行时
 ```
+
+> **输出目录不要复用。** 每次发版换一个新目录名（本项目用 `target/release`）。
+> 如果某个输出目录曾被"被文件锁打断的删除"删过一半，它看起来还在、实际已损坏，
+> 症状是启动时报 `FileNotFoundException: ...\runtime\lib\tzdb.dat` —— 极容易被
+> 误判成代码问题。构建前先确认没有实例在运行，否则 `mvn clean` 就会留下这种半删目录。
 
 ### 关于两个关键参数
 
@@ -156,7 +161,7 @@ jlink 精简镜像里没有 `java.exe`，但同版本 JDK 的 `java.exe` 拷进�
 
 ```bash
 JDK="/c/Program Files/Eclipse Adoptium/jdk-17.0.20.101-hotspot"
-RT="target/dist/DesktopCalendar/runtime"
+RT="target/release/DesktopCalendar/runtime"
 
 # 临时借一个 java.exe 来跑探针
 cp "$JDK/bin/java.exe" "$RT/bin/java.exe"
@@ -168,6 +173,50 @@ rm -f "$RT/bin/java.exe"
 
 顺带能确认 `jdk.charsets` 没被裁掉（GBK 由它提供，缺了默认字符集会退化成
 `US-ASCII` 之类，症状同样是菜单乱码）。
+
+### 3.4 验证截图的隐私规范（重要）
+
+**凡是走 `Robot.createScreenCapture` 抓的截图，都会把桌面内容一起拍进去。**
+本挂件默认 92% 不透明，窗口背后的桌面会**整个合成进图片** —— 你当时开着的聊天窗口、
+浏览器、邮件全在里面。肉眼看小图不容易发现，一旦外发就是隐私事故。
+
+本项目曾因此清理掉 53 张历史截图。
+
+#### 首选：离屏渲染
+
+`tools/OffscreenShot.java` 把真实组件树 `paint()` 进内存图，再按指定不透明度
+**合成到程序生成的背景**上。窗口级不透明度在视觉上就是"整窗按 alpha 叠加到底层"，
+所以合成结果与真实上屏效果一致，但物理上不含任何屏幕像素。
+
+```bash
+# 取依赖 classpath（Windows 用 ; 分隔，Linux/macOS 用 :）
+mvn -q dependency:build-classpath -Dmdep.outputFile=target/cp.txt
+
+javac -encoding UTF-8 -cp "target/classes;$(cat target/cp.txt)" \
+      -d target/tools tools/OffscreenShot.java
+
+java -cp "target/classes;$(cat target/cp.txt);target/tools" \
+     OffscreenShot today 92 out/preview/今日模式.png
+```
+
+参数：`OffscreenShot <today|month> <不透明度> <输出.png> [宽x高] [menu]`
+
+菜单也能离屏画 —— `JPopupMenu` 只要 `setInvoker` + `setSize(preferred)` + `doLayout()`
+就能直接 `paint()`，不需要显示任何窗口。
+
+#### 万不得已要抓真实屏幕时
+
+Win32 原生菜单（托盘右键菜单）离屏画不出来，只能抓屏。此时截取区域**要紧贴
+目标窗口的 `GetWindowRect`**，不要用整屏或大片区域。
+
+#### 交付前做客观检测
+
+圆角窗口的四角在干净图里应该彼此一致；透出桌面的图，四角各自映到不同的桌面内容。
+取三处角块各 12×12 的平均色，算两两欧氏距离，`>= 30` 判为泄漏。
+
+> ⚠️ **必须排除右下角**：窗口右下角自带"大小调整手柄"（几条斜线），会让该处块均值
+> 偏暗，单这一项就能造出 ~31 的差异，足以把完全干净的离屏渲染图误判成泄漏。
+> 所以只比较**左上 / 右上 / 左下**三个角。
 
 ---
 
@@ -233,7 +282,7 @@ jpackage --type app-image --name DesktopCalendar \
   --input target/jpackage-input \
   --main-jar desktop-calendar-1.0.1-jar-with-dependencies.jar \
   --main-class com.calendar.system.Main \
-  --dest target/dist --app-version 1.0.1 --vendor lolippz \
+  --dest target/release --app-version 1.0.1 --vendor lolippz \
   --icon src/main/resources/icon.ico \
   --add-modules java.base,java.desktop,java.net.http,java.prefs,java.sql,java.naming,java.logging,java.management,jdk.unsupported,jdk.crypto.ec,jdk.localedata,jdk.charsets,jdk.zipfs
 
