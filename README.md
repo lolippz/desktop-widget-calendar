@@ -8,6 +8,28 @@
 
 ---
 
+## 下载安装（普通用户）
+
+**不需要安装 Java。** 运行时已经打包进去，下载解压双击即可用。
+
+| 平台 | 下载 |
+|---|---|
+| Windows 10 / 11（64 位） | **[⬇ 下载最新版](https://github.com/lolippz/desktop-widget-calendar/releases/latest)** |
+
+1. 下载 `DesktopCalendar-<版本>-win-x64.zip`
+2. 解压到任意目录（例如 `D:\软件\`）
+3. 双击解压出来的 `DesktopCalendar.exe`
+
+> ⚠️ **不要只把 `DesktopCalendar.exe` 单独拷出来。** 它必须和同目录下的
+> `app`、`runtime` 两个文件夹放在一起，否则无法启动。
+
+数据保存在 `%APPDATA%\DesktopCalendar\`，想彻底卸载直接删掉这个文件夹即可，
+不会在注册表留残留。
+
+想从源码构建、或参与开发，见下面的[快速开始](#快速开始)。
+
+---
+
 ## 功能特性
 
 ### 日程
@@ -66,7 +88,9 @@
 
 ---
 
-## 环境要求
+## 环境要求（从源码构建）
+
+> 只是使用的话**不需要**看这一节 —— 直接下[发布包](#下载安装普通用户)即可。
 
 | 项 | 要求 |
 |---|---|
@@ -268,7 +292,16 @@ It shows what you need at a glance — today's schedule, lunar date and Chinese 
 - Optional market ticker: NASDAQ-100, SSE Composite, SZSE Component, plus a personal watchlist (up to 20 symbols) and financial news
 - Market data refreshes every 60s during trading hours, every 30min otherwise
 
-**Requirements**: Windows, JDK 17+, Maven 3.8+ (or plain `javac`).
+**Download (no Java required)**
+
+Grab the latest prebuilt package — the runtime is bundled, just unzip and run:
+
+**https://github.com/lolippz/desktop-widget-calendar/releases/latest**
+
+> ⚠️ Don't copy `DesktopCalendar.exe` out on its own — it needs the `app` and
+> `runtime` folders sitting next to it.
+
+**Build from source** — Windows, JDK 17+, Maven 3.8+ (or plain `javac`).
 
 ```bash
 git clone https://github.com/lolippz/desktop-widget-calendar.git
