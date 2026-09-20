@@ -4,8 +4,8 @@
 
 | 产物 | 用途 | 使用者需要装 Java 吗 |
 | --- | --- | --- |
-| `desktop-calendar-1.0.0-jar-with-dependencies.jar` | 命令行 `java -jar` 运行 | 需要 |
-| `DesktopCalendar-1.0.0-win-x64.zip` | 免安装版，解压双击 EXE 即用 | **不需要**（运行时已内置） |
+| `desktop-calendar-1.0.1-jar-with-dependencies.jar` | 命令行 `java -jar` 运行 | 需要 |
+| `DesktopCalendar-1.0.1-win-x64.zip` | 免安装版，解压双击 EXE 即用 | **不需要**（运行时已内置） |
 
 下面按顺序说明。
 
@@ -29,7 +29,7 @@
 mvn clean package
 ```
 
-产物：`target/desktop-calendar-1.0.0-jar-with-dependencies.jar`
+产物：`target/desktop-calendar-1.0.1-jar-with-dependencies.jar`
 
 这一步由 `pom.xml` 里的 `maven-assembly-plugin` 完成，会把
 sqlite-jdbc、FlatLaf、lunar 三个依赖一起打进同一个 jar，
@@ -46,7 +46,7 @@ sqlite-jdbc、FlatLaf、lunar 三个依赖一起打进同一个 jar，
 
 ```bash
 mkdir -p target/jpackage-input
-cp target/desktop-calendar-1.0.0-jar-with-dependencies.jar target/jpackage-input/
+cp target/desktop-calendar-1.0.1-jar-with-dependencies.jar target/jpackage-input/
 ```
 
 ### 3.2 执行 jpackage
@@ -56,10 +56,10 @@ jpackage \
   --type app-image \
   --name DesktopCalendar \
   --input target/jpackage-input \
-  --main-jar desktop-calendar-1.0.0-jar-with-dependencies.jar \
+  --main-jar desktop-calendar-1.0.1-jar-with-dependencies.jar \
   --main-class com.calendar.system.Main \
   --dest target/dist \
-  --app-version 1.0.0 \
+  --app-version 1.0.1 \
   --vendor lolippz \
   --description "Desktop calendar widget with lunar calendar and stock quotes" \
   --icon src/main/resources/icon.ico \
@@ -72,7 +72,7 @@ jpackage \
 target/dist/DesktopCalendar/
 ├── DesktopCalendar.exe      启动器（约 440 KB）
 ├── app/                     应用 jar 与配置
-│   ├── desktop-calendar-1.0.0-jar-with-dependencies.jar
+│   ├── desktop-calendar-1.0.1-jar-with-dependencies.jar
 │   └── DesktopCalendar.cfg
 └── runtime/                 精简后的 Java 运行时
 ```
@@ -117,8 +117,8 @@ Java 把菜单项文本转成字节时走的是 `file.encoding`，而 Win32 的 
 
 ```bash
 jdeps --multi-release 17 --ignore-missing-deps --print-module-deps \
-      --class-path target/desktop-calendar-1.0.0-jar-with-dependencies.jar \
-      target/desktop-calendar-1.0.0-jar-with-dependencies.jar
+      --class-path target/desktop-calendar-1.0.1-jar-with-dependencies.jar \
+      target/desktop-calendar-1.0.1-jar-with-dependencies.jar
 ```
 
 `jdeps` 输出 `java.base,java.desktop,java.net.http,java.prefs,java.sql`。
@@ -176,7 +176,7 @@ rm -f "$RT/bin/java.exe"
 把 `DesktopCalendar` 目录和一份使用说明一起打包：
 
 ```
-DesktopCalendar-1.0.0-win-x64.zip
+DesktopCalendar-1.0.1-win-x64.zip
 ├── DesktopCalendar/          解压后直接双击里面的 EXE
 │   ├── DesktopCalendar.exe
 │   ├── app/
@@ -187,7 +187,7 @@ DesktopCalendar-1.0.0-win-x64.zip
 Windows PowerShell：
 
 ```powershell
-Compress-Archive -Path target\dist\DesktopCalendar -DestinationPath target\dist\DesktopCalendar-1.0.0-win-x64.zip
+Compress-Archive -Path target\dist\DesktopCalendar -DestinationPath target\dist\DesktopCalendar-1.0.1-win-x64.zip
 ```
 
 > 注意：`Compress-Archive` 处理中文路径时偶有编码问题；
@@ -198,8 +198,8 @@ Compress-Archive -Path target\dist\DesktopCalendar -DestinationPath target\dist\
 ## 五、发布到 GitHub Release
 
 1. 打开 `https://github.com/<用户名>/<仓库名>/releases/new`
-2. **Choose a tag** 填 `v1.0.0`，点 `Create new tag: v1.0.0`
-3. **Release title** 填 `v1.0.0`
+2. **Choose a tag** 填 `v1.0.1`，点 `Create new tag: v1.0.1`
+3. **Release title** 填 `v1.0.1`
 4. 在描述框里写更新说明
 5. 把 zip 拖进最下方的 **Attach binaries** 区域
 6. 点 **Publish release**
@@ -226,17 +226,17 @@ mvn clean package
 
 # 2. 准备输入目录
 mkdir -p target/jpackage-input
-cp target/desktop-calendar-1.0.0-jar-with-dependencies.jar target/jpackage-input/
+cp target/desktop-calendar-1.0.1-jar-with-dependencies.jar target/jpackage-input/
 
 # 3. 打包（模块清单见上文）
 jpackage --type app-image --name DesktopCalendar \
   --input target/jpackage-input \
-  --main-jar desktop-calendar-1.0.0-jar-with-dependencies.jar \
+  --main-jar desktop-calendar-1.0.1-jar-with-dependencies.jar \
   --main-class com.calendar.system.Main \
-  --dest target/dist --app-version 1.0.0 --vendor lolippz \
+  --dest target/dist --app-version 1.0.1 --vendor lolippz \
   --icon src/main/resources/icon.ico \
   --add-modules java.base,java.desktop,java.net.http,java.prefs,java.sql,java.naming,java.logging,java.management,jdk.unsupported,jdk.crypto.ec,jdk.localedata,jdk.charsets,jdk.zipfs
 
 # 4. 压缩
-powershell -Command "Compress-Archive -Path target\dist\DesktopCalendar -DestinationPath target\dist\DesktopCalendar-1.0.0-win-x64.zip -Force"
+powershell -Command "Compress-Archive -Path target\dist\DesktopCalendar -DestinationPath target\dist\DesktopCalendar-1.0.1-win-x64.zip -Force"
 ```

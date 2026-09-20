@@ -113,7 +113,7 @@ mvn clean package
 产物是自带全部依赖的 fat jar，双击或命令行运行：
 
 ```bash
-java -jar target/desktop-calendar-1.0.0-jar-with-dependencies.jar
+java -jar target/desktop-calendar-1.0.1-jar-with-dependencies.jar
 ```
 
 ### 方式二：在 IDE 里直接运行
@@ -260,6 +260,14 @@ JSON 解析没有引入第三方库——`util/Json.java` 是一个约 200 行�
 
 ---
 
+## 更新记录
+
+各版本的变更与修复说明见 [`CHANGELOG.md`](CHANGELOG.md)。
+
+最新版本：**v1.0.1**（修复托盘右键菜单中文显示为方框的问题）
+
+---
+
 ## 参与贡献
 
 欢迎提 Issue 与 Pull Request。改动前建议先了解两条约定：
@@ -307,7 +315,7 @@ Grab the latest prebuilt package — the runtime is bundled, just unzip and run:
 git clone https://github.com/lolippz/desktop-widget-calendar.git
 cd desktop-widget-calendar
 mvn clean package
-java -jar target/desktop-calendar-1.0.0-jar-with-dependencies.jar
+java -jar target/desktop-calendar-1.0.1-jar-with-dependencies.jar
 ```
 
 All data stays local (`%APPDATA%\DesktopCalendar`). Market data comes from third-party public endpoints and is **for personal reference only — not investment advice**.
