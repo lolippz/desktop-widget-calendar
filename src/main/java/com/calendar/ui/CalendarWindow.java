@@ -662,6 +662,18 @@ public final class CalendarWindow extends JFrame {
 
     // ---------------------------------------------------------------- 托盘与窗口
 
+    /**
+     * 安装托盘图标与原生右键菜单。
+     *
+     * <p><b>本菜单依赖 JVM 使用系统默认字符集（中文 Windows 上为 GBK）。</b>
+     * AWT 的 {@link PopupMenu} 在 Windows 上是原生 Win32 菜单：Java 把菜单项文本
+     * 转成字节时走的是 {@code file.encoding}，而 Win32 的 ANSI 菜单 API 按系统
+     * ANSI 代码页解读这些字节。若启动参数里加了 {@code -Dfile.encoding=UTF-8}，
+     * 两边不匹配，所有菜单项都会渲染成方框（缺字形）。实测：GBK 正常，UTF-8 全变方框。
+     *
+     * <p>本项目其它位置的中文 I/O 都显式指定了字符集（见 HistoryService、Net），
+     * 不依赖默认字符集，因此去掉该 JVM 参数是安全的。改动启动参数前请先回归这一处。
+     */
     private void installTrayIcon() {
         if (!SystemTray.isSupported()) return;
         PopupMenu menu = new PopupMenu();

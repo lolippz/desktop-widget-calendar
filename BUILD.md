@@ -63,7 +63,6 @@ jpackage \
   --vendor lolippz \
   --description "Desktop calendar widget with lunar calendar and stock quotes" \
   --icon src/main/resources/icon.ico \
-  --java-options "-Dfile.encoding=UTF-8" \
   --add-modules java.base,java.desktop,java.net.http,java.prefs,java.sql,java.naming,java.logging,java.management,jdk.unsupported,jdk.crypto.ec,jdk.localedata,jdk.charsets,jdk.zipfs
 ```
 
@@ -80,9 +79,35 @@ target/dist/DesktopCalendar/
 
 ### 关于两个关键参数
 
-**`--java-options "-Dfile.encoding=UTF-8"` 不能省。**
-JDK 17 在中文 Windows 上默认字符集是 GBK，本项目源码里有大量中文字面量与
-中文文件读写，不加这个参数会出现乱码。
+**`--java-options "-Dfile.encoding=UTF-8"` 千万不要加！**
+
+这一点与直觉相反，但本项目**必须**使用系统默认字符集（中文 Windows 上是 GBK）。
+
+原因：AWT 的托盘菜单（`PopupMenu` / `MenuItem`）在 Windows 上是**原生 Win32 菜单**。
+Java 把菜单项文本转成字节时走的是 `file.encoding`，而 Win32 的 ANSI 菜单 API
+按系统 ANSI 代码页（GBK）解读这些字节。一旦把 `file.encoding` 改成 UTF-8，
+字节与解读方式不匹配，菜单项就会全部渲染成方框（缺字形）。
+
+实测对照（同一份菜单代码、同一字体 `Microsoft YaHei UI`，仅改这一个参数）：
+
+| JVM 参数 | 托盘右键菜单渲染 |
+| --- | --- |
+| 不加（`file.encoding=GBK`） | ✅ 显示日程 / 隐藏日程 / 新建日程 / 总在最前 / 透明度 / 退出 |
+| `-Dfile.encoding=UTF-8` | ❌ 全部变成方框 |
+
+那不加会不会让中文文件读写乱码？**不会。** 本项目所有文件与网络 I/O 都显式指定了字符集：
+
+- `HistoryService` 用 `Files.readString/writeString(..., StandardCharsets.UTF_8)`
+- `Net` 的 `new String(response.body(), charset)` 显式传 charset
+- SQLite 由 sqlite-jdbc 内部按 UTF-8 处理，与默认字符集无关
+- `java.util.prefs.Preferences` 内部用 UTF-8 存储
+
+源码里的中文字面量在**编译期**就已按 UTF-8 写进 class 文件（由 `pom.xml` 的
+`maven.compiler.encoding` 保证），运行时与默认字符集无关。
+
+> 同理，在 IDEA 里运行时也要检查运行配置的 **VM options**：
+> IDEA 会给 Java 运行配置自动加上 `-Dfile.encoding=UTF-8`，
+> 需要把它删掉，否则同样出现方框。
 
 **`--add-modules` 是体积优化的关键。**
 不加它，jpackage 会把**整个 JDK 运行时**塞进去（约 129 MB，总包 143 MB）；
@@ -112,6 +137,37 @@ jdeps --multi-release 17 --ignore-missing-deps --print-module-deps \
 
 > 裁剪模块后**务必实机运行一次 EXE 验证**，确认窗口正常弹出、网络与数据库功能正常。
 > 漏掉模块的症状通常是"启动即闪退"，且因为是 GUI 程序看不到任何报错。
+
+### 3.3 验证托盘右键菜单（务必单独验证）
+
+**主窗口正常 ≠ 托盘菜单正常。** 主窗口是 Swing 自己绘制的，托盘菜单是原生 Win32 菜单，
+两者走完全不同的渲染路径。上面那条 `-Dfile.encoding` 的坑只会在托盘菜单上暴露出来，
+所以每次改动启动参数或打包配置后，都要专门回归这一项：
+
+1. 运行 `DesktopCalendar.exe`
+2. 点击窗口关闭按钮（或最小化），程序会收进系统托盘
+3. 在托盘图标上**点鼠标右键**
+4. 菜单应显示「显示日程 / 隐藏日程 / 新建日程 / 总在最前 / 透明度 / 退出」；
+   若显示为方框，说明 `file.encoding` 又被加回来了
+
+**想不靠肉眼验证字符集**，可以用下面这个办法直接在发布包的运行时上跑探针。
+jlink 精简镜像里没有 `java.exe`，但同版本 JDK 的 `java.exe` 拷进去就能用
+（它会自动加载同目录 `../lib/modules`）：
+
+```bash
+JDK="/c/Program Files/Eclipse Adoptium/jdk-17.0.20.101-hotspot"
+RT="target/dist/DesktopCalendar/runtime"
+
+# 临时借一个 java.exe 来跑探针
+cp "$JDK/bin/java.exe" "$RT/bin/java.exe"
+"$RT/bin/java.exe" -cp <探针目录> EncProbe      # 应输出 file.encoding = GBK
+
+# ★ 验证完必须删掉，否则会被打进发布包
+rm -f "$RT/bin/java.exe"
+```
+
+顺带能确认 `jdk.charsets` 没被裁掉（GBK 由它提供，缺了默认字符集会退化成
+`US-ASCII` 之类，症状同样是菜单乱码）。
 
 ---
 
@@ -179,7 +235,6 @@ jpackage --type app-image --name DesktopCalendar \
   --main-class com.calendar.system.Main \
   --dest target/dist --app-version 1.0.0 --vendor lolippz \
   --icon src/main/resources/icon.ico \
-  --java-options "-Dfile.encoding=UTF-8" \
   --add-modules java.base,java.desktop,java.net.http,java.prefs,java.sql,java.naming,java.logging,java.management,jdk.unsupported,jdk.crypto.ec,jdk.localedata,jdk.charsets,jdk.zipfs
 
 # 4. 压缩
