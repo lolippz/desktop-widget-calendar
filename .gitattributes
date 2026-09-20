@@ -1,0 +1,17 @@
+# 仓库与工作区统一使用 LF。
+#
+# 显式写 eol=lf 而不是只写 text=auto，原因有两点：
+#   1. 本项目的 Java 源码原本就是 LF。若只写 text=auto，在 Windows 上
+#      core.autocrlf=true 会把工作区的所有源文件改写成 CRLF——仓库没问题，
+#      但用户磁盘上的文件会凭空"变样"，容易误以为被改动了。
+#   2. 显式 eol=lf 的优先级高于 core.autocrlf，跨平台贡献者拿到的行尾一致，
+#      CI（Linux）与 IDE 之间也不会产生满屏的行尾 diff。
+#
+* text=auto eol=lf
+
+# 二进制文件不做任何行尾转换
+*.jar binary
+*.png binary
+*.jpg binary
+*.ico binary
+*.db binary

@@ -1,0 +1,64 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.kotlin
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+
+### 本仓库只发布代码，以下资料保留在本地 ###
+# 设计文档与截图（含根目录与 preview 子目录）
+/*.html
+/*.png
+/preview/
+/reference/
+
+### 构建与 IDE 输出 ###
+/out/
+/out-verify/
+
+### 临时文件与备份 ###
+*.tmp
+*.bak
+*.bak-*
+build.log
+upsrc.txt
+s.tmp
+
+### 运行时数据（日程数据库、锁文件）###
+*.db
+*.db-journal
+*.db-wal
+*.lock
