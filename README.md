@@ -266,9 +266,10 @@ JSON 解析没有引入第三方库——`util/Json.java` 是一个约 200 行�
 
 ## 更新记录
 
-各版本的变更与修复说明见 [`CHANGELOG.md`](CHANGELOG.md)。
+各版本的变更与修复说明见 [`CHANGELOG.md`](CHANGELOG.md)，已发布版本见
+[Releases](https://github.com/lolippz/desktop-widget-calendar/releases)。
 
-最新版本：**v1.0.2**（内存占用降低约 30%，并补充中文检索关键词）
+最近的改动：内存占用降低约 30%，并补充中文检索关键词（详见 1.0.2 条目）。
 
 ---
 
