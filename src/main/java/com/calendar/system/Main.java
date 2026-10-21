@@ -3,6 +3,7 @@ package com.calendar.system;
 import com.calendar.data.AppPaths;
 import com.calendar.ui.CalendarWindow;
 import com.calendar.ui.Theme;
+import com.calendar.util.RuntimeTuning;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -27,7 +28,10 @@ public final class Main {
                 }
                 AppPaths.migrateLegacyDatabase();
                 Theme.install();
+                // 必须在 Swing 组件创建之前设置进程级提示，见 RuntimeTuning 注释
+                RuntimeTuning.installProcessHints();
                 new CalendarWindow().setVisible(true);
+                RuntimeTuning.logFootprint();
             } catch (Throwable failure) {
                 // 构造过程中的异常原本只会打到 stderr，用户看到的是"双击了没反应"。
                 failure.printStackTrace();

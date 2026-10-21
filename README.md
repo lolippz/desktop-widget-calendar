@@ -1,10 +1,14 @@
-# 桌面日程 · Desktop Widget Calendar
+# 桌面日历挂件 · 桌面日程 · 农历节假日
 
-> 一个常驻桌面的日程挂件。农历、节假日、当天日程、股市行情、历史上的今天，一屏扫完。
+> Windows 桌面日历小组件：常驻桌面的日程提醒、农历节气、法定节假日、股市行情与历史上的今天，一屏扫完。
 
-一个用 Java Swing 写的 Windows 桌面挂件。它不做"功能齐全的日历软件"——它做的是**挂在桌面角落、扫一眼就够**的那块信息板：今天该做什么、今天是什么日子、今天市场怎么样。
+**桌面日历 / 桌面日程 / 日历挂件 / 桌面小组件 / 农历日历**——一个用 Java Swing 写的 Windows 桌面挂件。
+它不做"功能齐全的日历软件"，它做的是**挂在桌面角落、扫一眼就够**的那块信息板：
+今天该做什么、今天是什么日子、今天市场怎么样。
 
-[English](#english) · 简体中文
+免安装、开源、数据全部留在本机。行情与资讯是可选开关，不需要就关掉。
+
+作者：**2U** · [English](#english) · 简体中文
 
 ---
 
@@ -113,7 +117,7 @@ mvn clean package
 产物是自带全部依赖的 fat jar，双击或命令行运行：
 
 ```bash
-java -jar target/desktop-calendar-1.0.1-jar-with-dependencies.jar
+java -jar target/desktop-calendar-1.0.2-jar-with-dependencies.jar
 ```
 
 ### 方式二：在 IDE 里直接运行
@@ -219,7 +223,7 @@ src/main/java/com/calendar/
 └── util/       Json（零依赖 JSON 解析）、Net（HTTP 统一出口）、Texts（文案）
 ```
 
-共 34 个源文件。分层原则是 **`ui` 不直接碰网络与数据库**，一律经过 `service`。
+共 35 个源文件。分层原则是 **`ui` 不直接碰网络与数据库**，一律经过 `service`。
 
 ---
 
@@ -264,7 +268,7 @@ JSON 解析没有引入第三方库——`util/Json.java` 是一个约 200 行�
 
 各版本的变更与修复说明见 [`CHANGELOG.md`](CHANGELOG.md)。
 
-最新版本：**v1.0.1**（修复托盘右键菜单中文显示为方框的问题）
+最新版本：**v1.0.2**（内存占用降低约 30%，并补充中文检索关键词）
 
 ---
 
@@ -277,9 +281,27 @@ JSON 解析没有引入第三方库——`util/Json.java` 是一个约 200 行�
 
 ---
 
+## 关键词
+
+如果你在找的是下面这些东西，那大概率就是这个项目：
+
+**日历类**：桌面日历 · 桌面日历软件 · Windows 桌面日历 · 电脑桌面日历 · 日历挂件 · 桌面挂件 · 桌面小组件 · 桌面插件 · 常驻桌面 · 悬浮日历
+
+**日程类**：桌面日程 · 日程提醒 · 待办提醒 · 日程管理 · 重复日程 · 托盘提醒 · 免安装日程软件
+
+**农历与节假日**：农历日历 · 老黄历 · 二十四节气 · 法定节假日 · 调休 · 放假安排 · 农历生日
+
+**行情类**：桌面股票行情 · 股票行情挂件 · 自选股 · 大盘指数 · 纳斯达克 · 上证指数 · 深证成指 · 财经要闻 · 历史上的今天
+
+**技术向**：Java Swing 桌面应用 · 无边框圆角窗口 · 半透明窗口 · 窗口贴边吸附 · SQLite 本地存储 · jpackage 打包 exe · 无需安装 Java
+
+> 本项目为个人开源作品，界面文案与文档均为中文，主要面向中文 Windows 用户。
+
+---
+
 ## 开源协议
 
-[MIT](LICENSE) © 2026 lolippz
+[MIT](LICENSE) © 2026 2U
 
 ---
 
@@ -315,7 +337,7 @@ Grab the latest prebuilt package — the runtime is bundled, just unzip and run:
 git clone https://github.com/lolippz/desktop-widget-calendar.git
 cd desktop-widget-calendar
 mvn clean package
-java -jar target/desktop-calendar-1.0.1-jar-with-dependencies.jar
+java -jar target/desktop-calendar-1.0.2-jar-with-dependencies.jar
 ```
 
 All data stays local (`%APPDATA%\DesktopCalendar`). Market data comes from third-party public endpoints and is **for personal reference only — not investment advice**.

@@ -5,6 +5,38 @@
 
 ---
 
+## [1.0.2] - 2026-10-21
+
+### 优化
+
+- **内存占用降低约 30%**
+
+  打包时未指定任何 JVM 参数，JVM 会按物理内存自动配置：本机 15.8 GB 内存下，
+  堆上限被设为 4.2 GB、启动即提交 254 MB，并启用 G1GC 拉起 11 个 GC 线程。
+  而应用实际只用到约 11 MB 堆。
+
+  现通过 jpackage 的 `--java-options` 显式收紧：`-Xms16m -Xmx128m -XX:+UseSerialGC`
+  `-XX:MaxMetaspaceSize=64m -XX:ReservedCodeCacheSize=32m -XX:CICompilerCount=2 -Xshare:auto`。
+
+  实测 WorkingSet 从 **144.6 MB 降至 101.8 MB**，PrivateBytes 从 199 MB 降至 78 MB，
+  线程数从 47 降至 29。连续运行 46 秒两个采样点无增长，无内存泄漏。
+  功能与数据格式均无变化。
+
+### 新增
+
+- `util/RuntimeTuning`：关闭 ImageIO 磁盘缓存与 Direct3D 回退路径，保持双缓冲，
+  并在启动时打印实际内存占用，便于后续版本回归对比。
+
+### 变更
+
+- **作者署名统一为 `2U`**（文档、版权声明、打包厂商字段）。
+- **README 增加中文检索关键词**，便于中文用户按「桌面日历 / 桌面日程 / 农历日历 /
+  节假日 / 桌面挂件」等词检索到本项目。
+- **仓库不再提供界面截图**。界面说明改为纯文本示意图，避免半透明窗口截图
+  把用户桌面内容一并拍入。
+
+---
+
 ## [1.0.1] - 2026-09-20
 
 ### 修复
@@ -116,5 +148,6 @@
 
 ---
 
+[1.0.2]: https://github.com/lolippz/desktop-widget-calendar/releases/tag/v1.0.2
 [1.0.1]: https://github.com/lolippz/desktop-widget-calendar/releases/tag/v1.0.1
 [1.0.0]: https://github.com/lolippz/desktop-widget-calendar/releases/tag/v1.0.0
